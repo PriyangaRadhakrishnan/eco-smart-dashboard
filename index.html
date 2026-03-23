@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoSmart | Carbon & Energy Monitor</title>
+    <title>EcoSmart | AI Carbon Monitor</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,7 @@
             --primary: #00f2fe;
             --secondary: #4facfe;
             --warning: #ff4b2b;
-            --success: #00b09b;
+            --success: #10b981;
             --carbon: #10b981;
             --bg: #0f172a;
             --glass: rgba(255, 255, 255, 0.05);
@@ -40,15 +40,15 @@
         }
 
         .container {
-            width: 90%;
-            max-width: 550px;
+            width: 95%;
+            max-width: 600px;
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
             border-radius: 30px;
-            padding: 30px 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 35px 50px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
             animation: fadeIn 0.8s ease-out;
         }
 
@@ -58,7 +58,7 @@
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 600;
             text-align: center;
             margin-bottom: 25px;
@@ -71,38 +71,87 @@
         .carbon-dashboard {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 20px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 25px;
             text-align: center;
-            border: 1px solid rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carbon-dashboard:before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(to right, transparent, var(--carbon), transparent);
         }
 
         .carbon-title {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             color: var(--carbon);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: block;
+            font-weight: 600;
+        }
+
+        .carbon-value-display {
+            margin-bottom: 15px;
         }
 
         .carbon-value {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 600;
-            margin-bottom: 5px;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
         }
 
         .carbon-unit {
-            font-size: 1rem;
+            font-size: 1.1rem;
             opacity: 0.6;
+            margin-left: 5px;
+        }
+
+        /* Metrics Row */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .metric-unit {
+            font-size: 0.8rem;
+            opacity: 0.5;
         }
 
         .carbon-gauge-container {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            margin-top: 15px;
+            margin-top: 25px;
             overflow: hidden;
         }
 
@@ -110,31 +159,33 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(to right, var(--carbon), var(--warning));
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
         }
 
         .status-header {
             text-align: center;
             margin-bottom: 25px;
-            padding: 12px;
+            padding: 15px;
             border-radius: 15px;
             background: rgba(255, 255, 255, 0.02);
-            font-size: 0.95rem;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
         }
 
         .status-indicator {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 8px;
+            margin-right: 10px;
             box-shadow: 0 0 10px currentColor;
         }
 
         .controls {
             display: grid;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 25px;
         }
 
@@ -142,33 +193,35 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px;
+            padding: 14px 25px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 15px;
+            border-radius: 18px;
             transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
 
         .control-item:hover {
             background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .label-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
         .icon {
-            font-size: 1.3rem;
-            opacity: 0.8;
+            font-size: 1.4rem;
+            opacity: 0.9;
         }
 
         /* Toggle Switch Styling */
         .switch {
             position: relative;
             display: inline-block;
-            width: 46px;
-            height: 24px;
+            width: 50px;
+            height: 26px;
         }
 
         .switch input {
@@ -192,8 +245,8 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 18px;
+            width: 18px;
             left: 4px;
             bottom: 4px;
             background-color: white;
@@ -206,12 +259,12 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(22px);
+            transform: translateX(24px);
         }
 
         .analyze-btn {
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             border: none;
             border-radius: 15px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
@@ -220,7 +273,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 10px 15px -3px rgba(79, 172, 254, 0.4);
+            box-shadow: 0 10px 20px -5px rgba(79, 172, 254, 0.5);
             margin-bottom: 10px;
         }
 
@@ -240,37 +293,30 @@
         }
 
         .waste-alert {
-            padding: 18px;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 18px;
             background: rgba(255, 75, 43, 0.1);
-            border-left: 4px solid var(--warning);
+            border: 1px solid var(--warning);
             margin-bottom: 15px;
         }
 
         .waste-alert h4 {
             color: var(--warning);
-            margin-bottom: 5px;
-        }
-
-        .savings-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--carbon);
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-top: 8px;
+            margin-bottom: 8px;
+            font-size: 1rem;
         }
 
         .suggestions {
             background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 15px;
+            padding: 22px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .suggestions h4 {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: var(--primary);
+            font-size: 1rem;
         }
 
         .suggestions ul {
@@ -278,35 +324,35 @@
         }
 
         .suggestions li {
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
             display: flex;
             align-items: flex-start;
-            gap: 10px;
-            line-height: 1.4;
+            gap: 12px;
+            line-height: 1.5;
         }
 
         .suggestions li:before {
-            content: "•";
-            color: var(--primary);
-            font-weight: bold;
+            content: "💡";
+            font-size: 0.9rem;
         }
 
         .optimize-btn {
-            margin-top: 15px;
+            margin-top: 20px;
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 1px solid var(--primary);
-            background: transparent;
+            background: rgba(0, 242, 254, 0.05);
             color: var(--primary);
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s;
         }
 
         .optimize-btn:hover {
-            background: rgba(0, 242, 254, 0.1);
+            background: var(--primary);
+            color: var(--bg);
         }
 
         .hidden {
@@ -317,32 +363,46 @@
 <body>
 
     <div class="container">
-        <h1>EcoSmart Dashboard</h1>
+        <h1>EcoSmart AI</h1>
 
         <div class="carbon-dashboard">
-            <span class="carbon-title">Live Carbon Footprint</span>
+            <span class="carbon-title">Live AI Carbon Footprint</span>
             <div class="carbon-value-display">
-                <span id="carbonValue" class="carbon-value">0.00</span>
+                <span id="carbonValue" class="carbon-value">0.000</span>
                 <span class="carbon-unit">kg CO₂ / hr</span>
             </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Energy Usage</span>
+                    <span id="energyValue" class="metric-value">0.000</span>
+                    <span class="metric-unit">kWh/hr</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Operational Cost</span>
+                    <span id="costValue" class="metric-value">0.00</span>
+                    <span class="metric-unit">₹/hr</span>
+                </div>
+            </div>
+
             <div class="carbon-gauge-container">
                 <div id="carbonGauge" class="carbon-gauge-bar"></div>
             </div>
         </div>
 
-        <div class="status-header">
+        <div class="status-header" id="statusBox">
             <span id="statusIndicator" class="status-indicator" style="color: var(--success);"></span>
-            <span id="statusText" class="status-text">System Monitoring Activity</span>
+            <span id="statusText" class="status-text">Carbon footprint minimized ✅</span>
         </div>
 
         <div class="controls">
             <div class="control-item">
                 <div class="label-group">
-                    <span class="icon">🏠</span>
+                    <span class="icon">🏘️</span>
                     <span>Room Occupied</span>
                 </div>
                 <label class="switch">
-                    <input type="checkbox" id="roomOccupied" checked onchange="updateCarbon()">
+                    <input type="checkbox" id="roomOccupied" checked onchange="updateSystem()">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -353,7 +413,7 @@
                     <span>LED Lighting</span>
                 </div>
                 <label class="switch">
-                    <input type="checkbox" id="lightsOn" onchange="updateCarbon()">
+                    <input type="checkbox" id="lightsOn" onchange="updateSystem()">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -364,7 +424,7 @@
                     <span>Air Conditioning</span>
                 </div>
                 <label class="switch">
-                    <input type="checkbox" id="acOn" onchange="updateCarbon()">
+                    <input type="checkbox" id="acOn" onchange="updateSystem()">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -375,65 +435,84 @@
                     <span>Natural Daylight</span>
                 </div>
                 <label class="switch">
-                    <input type="checkbox" id="isDay" checked onchange="updateCarbon()">
+                    <input type="checkbox" id="isDay" checked onchange="updateSystem()">
                     <span class="slider"></span>
                 </label>
             </div>
         </div>
 
-        <button class="analyze-btn" onclick="checkWaste()">Analyze Efficiency</button>
+        <button class="analyze-btn" onclick="checkWaste()">Perform Smart Analysis</button>
 
         <div id="results" class="results">
             <div id="wasteAlert" class="waste-alert hidden">
-                <h4>⚠️ Reduction Opportunity</h4>
+                <h4>⚠️ Energy Waste Detected</h4>
                 <p id="alertMsg"></p>
-                <div id="potentialSavings" class="savings-info hidden">
-                    <span>🌍 Potential Savings: </span>
-                    <span id="savingsValue">0.00</span> kg CO₂ / hr
+                <div class="metrics-grid" style="margin-top: 15px;">
+                    <div style="font-size: 0.9rem; opacity: 0.8;">Wasted Energy: <span id="wastedEnergy" style="color: #fff; font-weight: 600;">0.00</span> kWh/hr</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8; text-align: right;">Financial Loss: <span id="wastedCost" style="color: #fff; font-weight: 600;">₹0.00</span> /hr</div>
                 </div>
             </div>
 
-            <div id="successMsg" class="waste-alert hidden" style="background: rgba(0, 176, 155, 0.1); border-color: var(--success);">
-                <h4 style="color: var(--success);">✅ Peak Carbon Efficiency</h4>
-                <p>Climate impact is minimal. You're setting a great example!</p>
-            </div>
-
             <div id="suggestionsBox" class="suggestions hidden">
-                <h4>💡 Optimization Steps</h4>
+                <h4>Smart Recommendations</h4>
                 <ul id="suggestionsList"></ul>
-                <button class="optimize-btn" onclick="optimize()">Apply Carbon Optimization</button>
+                <button class="optimize-btn" onclick="optimize()">Execute Auto-Optimization</button>
             </div>
         </div>
     </div>
 
     <script>
-        // CO2 Emission Factors (kg per hour)
-        const EMISSIONS = {
-            LIGHTS: 0.015,
-            AC: 0.85
+        // AI Rules & Carbon Factors
+        const RULES = {
+            LED_CO2: 0.015,
+            AC_CO2: 0.850,
+            BOTH_CO2: 0.863,
+            KG_TO_KWH: 0.82, // 1 kWh = 0.82 kg CO2
+            KWH_COST: 8 // ₹8 per kWh
         };
 
-        function updateCarbon() {
+        function calculateMetrics(lights, ac) {
+            let carbon = 0;
+            if (lights && ac) carbon = RULES.BOTH_CO2;
+            else if (lights) carbon = RULES.LED_CO2;
+            else if (ac) carbon = RULES.AC_CO2;
+
+            const energy = carbon / RULES.KG_TO_KWH;
+            const cost = energy * RULES.KWH_COST;
+
+            return { carbon, energy, cost };
+        }
+
+        function updateSystem() {
             const lightsOn = document.getElementById('lightsOn').checked;
             const acOn = document.getElementById('acOn').checked;
 
-            let total = 0;
-            if (lightsOn) total += EMISSIONS.LIGHTS;
-            if (acOn) total += EMISSIONS.AC;
+            const metrics = calculateMetrics(lightsOn, acOn);
 
-            document.getElementById('carbonValue').innerText = total.toFixed(3);
+            document.getElementById('carbonValue').innerText = metrics.carbon.toFixed(3);
+            document.getElementById('energyValue').innerText = metrics.energy.toFixed(3);
+            document.getElementById('costValue').innerText = metrics.cost.toFixed(2);
             
-            // Update gauge (max range ~1.0 kg/hr for small home prototype)
-            const level = Math.min((total / 1.0) * 100, 100);
+            // Gauge update
+            const level = Math.min((metrics.carbon / 1.0) * 100, 100);
             const gauge = document.getElementById('carbonGauge');
             gauge.style.width = level + '%';
             
-            if (level > 80) gauge.style.background = 'var(--warning)';
-            else if (level > 20) gauge.style.background = 'var(--secondary)';
-            else gauge.style.background = 'var(--carbon)';
+            const statusBox = document.getElementById('statusBox');
+            const statusText = document.getElementById('statusText');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const isOccupied = document.getElementById('roomOccupied').checked;
 
-            // Auto-check on toggle for seamless feel
-            return total;
+            // Simple visual feedback on toggles
+            if (!isOccupied && (lightsOn || acOn)) {
+                statusIndicator.style.color = 'var(--warning)';
+                statusText.innerText = 'Energy waste detected ⚠️ Turn off devices';
+                statusBox.style.borderColor = 'rgba(255, 75, 43, 0.4)';
+            } else {
+                statusIndicator.style.color = 'var(--success)';
+                statusText.innerText = 'Carbon footprint minimized ✅';
+                statusBox.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+            }
         }
 
         function checkWaste() {
@@ -444,67 +523,65 @@
 
             const resultsDiv = document.getElementById('results');
             const wasteAlert = document.getElementById('wasteAlert');
-            const successMsg = document.getElementById('successMsg');
             const suggestionsBox = document.getElementById('suggestionsBox');
             const suggestionsList = document.getElementById('suggestionsList');
             const alertMsg = document.getElementById('alertMsg');
-            const savingsBox = document.getElementById('potentialSavings');
-            const savingsValue = document.getElementById('savingsValue');
-            const statusIndicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('statusText');
+            const wastedEnergyText = document.getElementById('wastedEnergy');
+            const wastedCostText = document.getElementById('wastedCost');
 
             resultsDiv.classList.add('active');
             suggestionsList.innerHTML = '';
             
+            let isWasting = false;
             let issues = [];
             let suggestions = [];
-            let possibleSavings = 0;
+            let wasteCarbon = 0;
 
+            // Rule 1: Empty room + devices on = Waste
             if (!isOccupied) {
                 if (lightsOn || acOn) {
-                    issues.push("Powering an empty environment.");
-                    if (lightsOn) {
-                        suggestions.push("Illumination unnecessary when room is empty.");
-                        possibleSavings += EMISSIONS.LIGHTS;
-                    }
-                    if (acOn) {
-                        suggestions.push("Climate control can be paused for carbon reduction.");
-                        possibleSavings += EMISSIONS.AC;
-                    }
+                    isWasting = true;
+                    issues.push("Room is empty but environmental control is active.");
+                    suggestions.push("Turn off unnecessary devices when unoccupied.");
+                    
+                    const m = calculateMetrics(lightsOn, acOn);
+                    wasteCarbon = m.carbon;
                 }
             }
 
+            // Daylight Rule
             if (isDay && lightsOn) {
-                issues.push("Daylight override not utilized.");
-                suggestions.push("Opening blinds provides free illumination with 0 carbon cost.");
-                // Avoid double counting if room empty was already handled
-                if (isOccupied) possibleSavings += EMISSIONS.LIGHTS; 
+                if (!issues.includes("Room is empty but environmental control is active.")) {
+                    issues.push("Artificial lighting active during peak daylight.");
+                }
+                suggestions.push("Leverage natural light to eliminate lighting emissions.");
             }
 
-            if (issues.length > 0) {
+            if (isWasting || (isDay && lightsOn)) {
                 wasteAlert.classList.remove('hidden');
-                successMsg.classList.add('hidden');
                 suggestionsBox.classList.remove('hidden');
                 alertMsg.innerText = issues.join(' ');
                 
-                savingsBox.classList.remove('hidden');
-                savingsValue.innerText = possibleSavings.toFixed(3);
+                const wasteMetrics = calculateMetrics(lightsOn, acOn);
+                // If it's JUST daylight waste but room occupied, waste metrics are just for lights
+                if (!isWasting && isDay && lightsOn) {
+                    const lM = calculateMetrics(true, false);
+                    wastedEnergyText.innerText = lM.energy.toFixed(3);
+                    wastedCostText.innerText = "₹" + lM.cost.toFixed(2);
+                } else {
+                    wastedEnergyText.innerText = wasteMetrics.energy.toFixed(3);
+                    wastedCostText.innerText = "₹" + wasteMetrics.cost.toFixed(2);
+                }
 
                 suggestions.forEach(s => {
                     const li = document.createElement('li');
                     li.innerText = s;
                     suggestionsList.appendChild(li);
                 });
-
-                statusIndicator.style.color = 'var(--warning)';
-                statusText.innerText = 'Efficiency Improvement Possible';
             } else {
                 wasteAlert.classList.add('hidden');
-                successMsg.classList.remove('hidden');
                 suggestionsBox.classList.add('hidden');
-                
-                statusIndicator.style.color = 'var(--success)';
-                statusText.innerText = 'Carbon Footprint Minimized';
+                alert("Smart System: No waste detected in current configuration!");
             }
         }
 
@@ -519,14 +596,14 @@
                 document.getElementById('lightsOn').checked = false;
             }
 
-            updateCarbon();
+            updateSystem();
             checkWaste();
             
-            alert("Carbon footprint reduced! Every gram counts for the planet.");
+            alert("Optimization Executed: Carbon footprint and cost reduced to zero.");
         }
 
-        // Init
-        updateCarbon();
+        // Initialize display
+        updateSystem();
     </script>
 </body>
 </html>
