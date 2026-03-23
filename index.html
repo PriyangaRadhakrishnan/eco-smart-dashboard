@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSmart | Carbon & Energy Monitor</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --warning: #ff4b2b;
+            --success: #00b09b;
+            --carbon: #10b981;
+            --bg: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(79, 172, 254, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 550px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 25px;
+            background: linear-gradient(to right, var(--primary), var(--carbon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Carbon Dashboard */
+        .carbon-dashboard {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+
+        .carbon-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--carbon);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .carbon-value {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .carbon-unit {
+            font-size: 1rem;
+            opacity: 0.6;
+        }
+
+        .carbon-gauge-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .carbon-gauge-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--carbon), var(--warning));
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .status-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 12px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 0.95rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .controls {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .control-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .label-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon {
+            font-size: 1.3rem;
+            opacity: 0.8;
+        }
+
+        /* Toggle Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--bg);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(79, 172, 254, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .analyze-btn:active {
+            transform: scale(0.98);
+        }
+
+        .results {
+            margin-top: 25px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+
+        .results.active {
+            max-height: 500px;
+        }
+
+        .waste-alert {
+            padding: 18px;
+            border-radius: 15px;
+            background: rgba(255, 75, 43, 0.1);
+            border-left: 4px solid var(--warning);
+            margin-bottom: 15px;
+        }
+
+        .waste-alert h4 {
+            color: var(--warning);
+            margin-bottom: 5px;
+        }
+
+        .savings-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--carbon);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .suggestions {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .suggestions h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .suggestions ul {
+            list-style: none;
+        }
+
+        .suggestions li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .suggestions li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .optimize-btn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .optimize-btn:hover {
+            background: rgba(0, 242, 254, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>EcoSmart Dashboard</h1>
+
+        <div class="carbon-dashboard">
+            <span class="carbon-title">Live Carbon Footprint</span>
+            <div class="carbon-value-display">
+                <span id="carbonValue" class="carbon-value">0.00</span>
+                <span class="carbon-unit">kg CO₂ / hr</span>
+            </div>
+            <div class="carbon-gauge-container">
+                <div id="carbonGauge" class="carbon-gauge-bar"></div>
+            </div>
+        </div>
+
+        <div class="status-header">
+            <span id="statusIndicator" class="status-indicator" style="color: var(--success);"></span>
+            <span id="statusText" class="status-text">System Monitoring Activity</span>
+        </div>
+
+        <div class="controls">
+            <div class="control-item">
+                <div class="label-group">
+                    <span class="icon">🏠</span>
+                    <span>Room Occupied</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="roomOccupied" checked onchange="updateCarbon()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="control-item">
+                <div class="label-group">
+                    <span class="icon">💡</span>
+                    <span>LED Lighting</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="lightsOn" onchange="updateCarbon()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="control-item">
+                <div class="label-group">
+                    <span class="icon">❄️</span>
+                    <span>Air Conditioning</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="acOn" onchange="updateCarbon()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="control-item">
+                <div class="label-group">
+                    <span class="icon">☀️</span>
+                    <span>Natural Daylight</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="isDay" checked onchange="updateCarbon()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <button class="analyze-btn" onclick="checkWaste()">Analyze Efficiency</button>
+
+        <div id="results" class="results">
+            <div id="wasteAlert" class="waste-alert hidden">
+                <h4>⚠️ Reduction Opportunity</h4>
+                <p id="alertMsg"></p>
+                <div id="potentialSavings" class="savings-info hidden">
+                    <span>🌍 Potential Savings: </span>
+                    <span id="savingsValue">0.00</span> kg CO₂ / hr
+                </div>
+            </div>
+
+            <div id="successMsg" class="waste-alert hidden" style="background: rgba(0, 176, 155, 0.1); border-color: var(--success);">
+                <h4 style="color: var(--success);">✅ Peak Carbon Efficiency</h4>
+                <p>Climate impact is minimal. You're setting a great example!</p>
+            </div>
+
+            <div id="suggestionsBox" class="suggestions hidden">
+                <h4>💡 Optimization Steps</h4>
+                <ul id="suggestionsList"></ul>
+                <button class="optimize-btn" onclick="optimize()">Apply Carbon Optimization</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CO2 Emission Factors (kg per hour)
+        const EMISSIONS = {
+            LIGHTS: 0.015,
+            AC: 0.85
+        };
+
+        function updateCarbon() {
+            const lightsOn = document.getElementById('lightsOn').checked;
+            const acOn = document.getElementById('acOn').checked;
+
+            let total = 0;
+            if (lightsOn) total += EMISSIONS.LIGHTS;
+            if (acOn) total += EMISSIONS.AC;
+
+            document.getElementById('carbonValue').innerText = total.toFixed(3);
+            
+            // Update gauge (max range ~1.0 kg/hr for small home prototype)
+            const level = Math.min((total / 1.0) * 100, 100);
+            const gauge = document.getElementById('carbonGauge');
+            gauge.style.width = level + '%';
+            
+            if (level > 80) gauge.style.background = 'var(--warning)';
+            else if (level > 20) gauge.style.background = 'var(--secondary)';
+            else gauge.style.background = 'var(--carbon)';
+
+            // Auto-check on toggle for seamless feel
+            return total;
+        }
+
+        function checkWaste() {
+            const isOccupied = document.getElementById('roomOccupied').checked;
+            const lightsOn = document.getElementById('lightsOn').checked;
+            const acOn = document.getElementById('acOn').checked;
+            const isDay = document.getElementById('isDay').checked;
+
+            const resultsDiv = document.getElementById('results');
+            const wasteAlert = document.getElementById('wasteAlert');
+            const successMsg = document.getElementById('successMsg');
+            const suggestionsBox = document.getElementById('suggestionsBox');
+            const suggestionsList = document.getElementById('suggestionsList');
+            const alertMsg = document.getElementById('alertMsg');
+            const savingsBox = document.getElementById('potentialSavings');
+            const savingsValue = document.getElementById('savingsValue');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+
+            resultsDiv.classList.add('active');
+            suggestionsList.innerHTML = '';
+            
+            let issues = [];
+            let suggestions = [];
+            let possibleSavings = 0;
+
+            if (!isOccupied) {
+                if (lightsOn || acOn) {
+                    issues.push("Powering an empty environment.");
+                    if (lightsOn) {
+                        suggestions.push("Illumination unnecessary when room is empty.");
+                        possibleSavings += EMISSIONS.LIGHTS;
+                    }
+                    if (acOn) {
+                        suggestions.push("Climate control can be paused for carbon reduction.");
+                        possibleSavings += EMISSIONS.AC;
+                    }
+                }
+            }
+
+            if (isDay && lightsOn) {
+                issues.push("Daylight override not utilized.");
+                suggestions.push("Opening blinds provides free illumination with 0 carbon cost.");
+                // Avoid double counting if room empty was already handled
+                if (isOccupied) possibleSavings += EMISSIONS.LIGHTS; 
+            }
+
+            if (issues.length > 0) {
+                wasteAlert.classList.remove('hidden');
+                successMsg.classList.add('hidden');
+                suggestionsBox.classList.remove('hidden');
+                alertMsg.innerText = issues.join(' ');
+                
+                savingsBox.classList.remove('hidden');
+                savingsValue.innerText = possibleSavings.toFixed(3);
+
+                suggestions.forEach(s => {
+                    const li = document.createElement('li');
+                    li.innerText = s;
+                    suggestionsList.appendChild(li);
+                });
+
+                statusIndicator.style.color = 'var(--warning)';
+                statusText.innerText = 'Efficiency Improvement Possible';
+            } else {
+                wasteAlert.classList.add('hidden');
+                successMsg.classList.remove('hidden');
+                suggestionsBox.classList.add('hidden');
+                
+                statusIndicator.style.color = 'var(--success)';
+                statusText.innerText = 'Carbon Footprint Minimized';
+            }
+        }
+
+        function optimize() {
+            const isOccupied = document.getElementById('roomOccupied').checked;
+            const isDay = document.getElementById('isDay').checked;
+
+            if (!isOccupied) {
+                document.getElementById('lightsOn').checked = false;
+                document.getElementById('acOn').checked = false;
+            } else if (isDay) {
+                document.getElementById('lightsOn').checked = false;
+            }
+
+            updateCarbon();
+            checkWaste();
+            
+            alert("Carbon footprint reduced! Every gram counts for the planet.");
+        }
+
+        // Init
+        updateCarbon();
+    </script>
+</body>
+</html>
